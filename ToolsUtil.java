@@ -167,4 +167,143 @@ public class ToolsUtil {
             return target.replaceAll("[^ァ-ー]+", "");
         }
     }
+
+        /**
+        *  readJsonFile From Asset
+        */
+
+	    public static <T> T getJsonFromAssets(String fileName ,  Class<T> classOfT) {
+        String json = "";
+        try {
+            InputStream is = context.getAssets().open(fileName);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        model = new SearchConditionModel();
+        Gson gson = new Gson();
+        model = gson.fromJson(json, classOfT);
+    }
+    /**
+     * Gets string from assets file.
+     *
+     * @param resources the resources
+     * @param fileName  the assets file name
+     * @return the string from assets file
+     * @throws IOException the io exception
+     */
+    public static String getStringFromAssets(Resources resources, String fileName) throws IOException {
+            InputStream is = resources.getAssets().open(fileName)
+            BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            LogUtil.e(e);
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            int c;
+            while ((c = reader.read()) != -1) {
+                sb.append((char) c);
+            }
+        } catch (IOException e) {
+            LogUtil.e(e);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                LogUtil.e(e);
+            }
+        }
+
+        return sb.toString();
+    }
+
+}
+
+    /**
+     *  add thousandBit for num
+     *  eg: 1000 - > 1,000
+     */
+
+    public static String addThousandBit(int num) {
+        String text = String.valueOf(num).replaceAll(",","");
+        text = text.replaceAll("(?<=\\d)(?=(?:\\d{3})+$)", ",");
+        return text;
+    }
+
+    public static String addThousandBit(String num) {
+        String text = num.replaceAll(",", "");
+        text = text.replaceAll("(?<=\\d)(?=(?:\\d{3})+$)", ",");
+        return text;
+    }
+
+    public static class RxBus {
+    private Subject<Object, Object> bus = new SerializedSubject<>(PublishSubject.create());
+
+    private static RxBus rxBus;
+    private RxBus(){}
+
+    public static RxBus getInstance(){
+        if(rxBus == null)
+            synchronized (RxBus.class){
+                if(rxBus == null)
+                    rxBus = new RxBus();
+            }
+        return rxBus;
+    }
+
+    public void send(Object event){
+        bus.onNext(event);
+    }
+
+    public <T> Observable<T> toObservable(Class<T> clazz){
+        return bus.asObservable()
+                .filter(clazz::isInstance)
+                .map(o -> (T)o)
+                .doOnError(LogUtil::e)
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+}
+
+public static class LogUtil {
+    private static boolean debug = BuildConfig.DEBUG;
+
+    private LogUtil(){}
+
+    public static void setDebug(boolean debug) {
+        LogUtil.debug = debug;
+    }
+
+    public static void m(String tag, String msg) {
+        if(debug)
+            System.out.println(tag + "| " + msg);
+    }
+
+    public static void m(Class clazz, String msg) {
+        m(clazz.getSimpleName(), msg);
+    }
+
+    public static void m(Object from, String msg) {
+        m(from.getClass().getSimpleName(), msg);
+    }
+
+    public static void m(String msg) {
+        if(debug)
+            System.out.println(msg);
+    }
+
+    public static void e(Throwable t) {
+        if(debug)
+            t.printStackTrace();
+    }
+}
+
 }
