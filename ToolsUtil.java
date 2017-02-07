@@ -13,14 +13,11 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import indi.yume.tools.autosharedpref.model.FieldEntity;
-import indi.yume.tools.autosharedpref.util.ReflectUtil;
 
 /**
  * Created by xiejinpeng on 16/3/29.
  */
 public class ToolsUtil {
-
 
     public static void hideSoftKeyBoard(Activity activity) {
         View view = activity.getCurrentFocus();
@@ -53,51 +50,6 @@ public class ToolsUtil {
     }
 
     public static class ModelUtil {
-        /**
-         * Convert model to Map<String, String>.
-         *
-         * @param model the model object
-         * @return the map of filed name and value.
-         * @throws NoSuchMethodException     the no such method exception
-         * @throws IllegalAccessException    the illegal access exception
-         * @throws InvocationTargetException the invocation target exception
-         */
-        public static Map<String, String> convertModel2StringMap(Object model) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-            Map<String, FieldEntity> map = ReflectUtil.getFiledAndValue(model);
-
-            Map<String, String> valueMap = new IdentityHashMap<>();
-            for (Map.Entry<String, FieldEntity> entry : map.entrySet()) {
-                Object object = entry.getValue().getValue();
-                if (object != null) {
-                    String[] valueList = String.valueOf(object).split(",");
-                    for (String value : valueList)
-                        valueMap.put(
-                                separateCamelCase(entry.getKey(), "_").toLowerCase(),
-                                value);
-                }
-            }
-
-            return valueMap;
-        }
-
-        /**
-         * Convert model to Map<String, Object> has all field.
-         *
-         * @param model the model object
-         * @return the map of filed name and value.
-         * @throws NoSuchMethodException     the no such method exception
-         * @throws IllegalAccessException    the illegal access exception
-         * @throws InvocationTargetException the invocation target exception
-         */
-        public static Map<String, Object> convertModel2ObjectMap(Object model) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-            Map<String, FieldEntity> map = ReflectUtil.getFiledAndValue(model);
-
-            Map<String, Object> valueMap = new HashMap<>();
-            for (Map.Entry<String, FieldEntity> entry : map.entrySet())
-                valueMap.put(entry.getKey(), entry.getValue().getValue());
-
-            return valueMap;
-        }
 
         /**
          * Separate string by separator.
@@ -128,7 +80,6 @@ public class ToolsUtil {
             }
             return translation.toString();
         }
-    }
 
 
     public static class StringUtil {
@@ -197,7 +148,7 @@ public class ToolsUtil {
      * @throws IOException the io exception
      */
     public static String getStringFromAssets(Resources resources, String fileName) throws IOException {
-            InputStream is = resources.getAssets().open(fileName)
+            InputStream is = resources.getAssets().open(fileName);
             BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
