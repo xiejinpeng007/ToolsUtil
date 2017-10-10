@@ -1,2 +1,2 @@
 # ToolsUtil
-A android toolsutil collection.
+an Android ToolsUtil collection.
