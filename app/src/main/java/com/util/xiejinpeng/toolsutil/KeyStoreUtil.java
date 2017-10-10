@@ -1,3 +1,31 @@
+package com.util.xiejinpeng.toolsutil;
+
+import android.content.Context;
+import android.security.KeyPairGeneratorSpec;
+import android.text.TextUtils;
+import android.util.Base64;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.security.auth.x500.X500Principal;
+
 public class KeyStoreUtil {
 
     private static KeyStore keyStore = initKeyStore();
@@ -31,8 +59,13 @@ public class KeyStoreUtil {
     }
 
     public static boolean isAliasExist(String alias) {
-        return Stream.of(getKeyAliases())
-                .anyMatch(a -> TextUtils.equals(a, alias));
+        for (int i = 0; i < getKeyAliases().size(); i++) {
+            if (TextUtils.equals(getKeyAliases().get(i),alias))
+                return true;
+        }
+        return false;
+//        return Stream.of(getKeyAliases())
+//                .anyMatch(a -> TextUtils.equals(a, alias));
     }
 
     //generate key pair
@@ -139,5 +172,5 @@ public class KeyStoreUtil {
         return cipherStr;
     }
 
-    
+
 }
